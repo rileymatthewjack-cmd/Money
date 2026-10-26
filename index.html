@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FBF3DC">
+<title>Month Matrix</title>
+<style>
+:root{--bg:#FBF3DC;--pn:#FFFBEF;--soft:#F5EACB;--ink:#1E3A28;--mu:#5C6A55;--ac:#B4690E;--onac:#fff;--lf:#4C7A46;--ln:#E6D9B5;--warn:#A4471C;
+ --sh:0 1px 0 rgba(30,58,40,.05),0 12px 26px -16px rgba(30,58,40,.42);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13221A;--pn:#1C3025;--soft:#243B2D;--ink:#EDF3E8;--mu:#9DB1A3;--ac:#E8A94A;--onac:#1B1406;--lf:#7BC48A;--ln:#2C4636;--warn:#F0A67F;--sh:0 1px 0 rgba(0,0,0,.2),0 12px 26px -16px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13221A;--pn:#1C3025;--soft:#243B2D;--ink:#EDF3E8;--mu:#9DB1A3;--ac:#E8A94A;--onac:#1B1406;--lf:#7BC48A;--ln:#2C4636;--warn:#F0A67F;--sh:0 1px 0 rgba(0,0,0,.2),0 12px 26px -16px rgba(0,0,0,.7);color-scheme:dark}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-rounded,"SF Pro Rounded","Nunito","Avenir Next",Seravek,"Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.4}
+main{max-width:560px;margin:0 auto;padding:12px 14px 104px}
+h2{margin:0 0 6px;font-size:21px;font-weight:800;letter-spacing:-.01em}h3{margin:0;font-size:16px;font-weight:800}p{margin:8px 0}b,strong{font-weight:800}
+.mu{color:var(--mu);font-size:14px}.sm{font-size:13px}.mt{margin-top:8px}.good{color:var(--lf)}.bad{color:var(--warn)}
+.card{background:var(--pn);border:2px solid var(--ln);border-radius:22px;padding:14px 16px;margin-top:12px;box-shadow:var(--sh)}
+.card.warn{border-color:#C9A34E;background:linear-gradient(0deg,rgba(201,163,78,.12),rgba(201,163,78,.12)),var(--pn)}.card.alert{border-color:var(--warn);background:linear-gradient(0deg,rgba(164,71,28,.12),rgba(164,71,28,.12)),var(--pn)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sb{justify-content:space-between}
+input,select{font:inherit;background:var(--bg);color:var(--ink);border:2px solid var(--ln);border-radius:13px;padding:9px 11px;width:100%;min-width:0}
+label{display:block;flex:1;min-width:100px;font-size:13px;color:var(--mu)}label input,label select{margin-top:3px;font-size:16px}
+.btn{background:var(--ac);color:var(--onac);border:0;border-radius:15px;padding:11px 18px;font:inherit;font-weight:800;cursor:pointer;min-height:44px}.btn.g{background:var(--pn);color:var(--ink);border:2px solid var(--ln)}.btn:disabled{opacity:.45}
+.chip{background:var(--bg);border:2px solid var(--ln);border-radius:22px;padding:6px 12px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;min-height:36px}.chip.on{border-color:var(--ac);background:var(--soft);font-weight:800}.chip:disabled{opacity:.4}.chip.stp{min-width:44px;min-height:44px;font-size:22px;padding:0}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.bar{height:13px;border-radius:9px;background:var(--ln);overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;border-radius:9px;background:var(--lf);transition:width .5s}.bar.hi i{background:#D9622B}.bar.wn i{background:#8FA3B5}.bar.ok i{background:var(--lf)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.tiles.t2{grid-template-columns:repeat(2,1fr)}
+.tile{background:var(--soft);border-radius:16px;padding:9px 10px;min-width:0}.tile b{display:block;font-size:19px;line-height:1.1;font-weight:800}.tile span{font-size:12px;color:var(--mu);line-height:1.2;display:block;margin-top:2px}
+.big{font-size:34px;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.note{background:var(--soft);border-radius:14px;padding:9px 12px;font-size:14px;margin-top:8px}.warnbox{background:rgba(164,71,28,.11);border:2px solid rgba(164,71,28,.35);border-radius:14px;padding:9px 12px;font-size:14px;margin-top:8px}
+.coach{background:var(--pn);border:2px solid var(--ln);border-radius:16px;padding:10px 14px;margin-top:4px;font-weight:700;box-shadow:var(--sh)}
+.meal{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--ln)}.meal:last-child{border-bottom:0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}.tbl th{text-align:left;color:var(--mu);font-weight:700;font-size:12px;padding:4px}.tbl td{padding:8px 4px;border-top:1px dashed var(--ln)}.tbl th:nth-child(n+2),.tbl td:nth-child(n+2){text-align:right}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.lg{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;margin:3px 12px 3px 0}.lg i{width:11px;height:11px;border-radius:3px;display:inline-block;flex:none}
+.csvbox{width:100%;height:120px;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:2px solid var(--ln);border-radius:12px;padding:8px;margin-top:8px}
+details.card summary{cursor:pointer;font-weight:800}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.pt{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--bg);border:2px solid var(--ln);border-radius:18px;padding:12px 6px;font:inherit;color:var(--ink);cursor:pointer;min-height:96px}.pt .pi{font-size:30px;line-height:1.1}.pt.on{border-color:var(--lf);background:rgba(76,122,70,.16)}.pt .tk{position:absolute;top:6px;right:8px;font-style:normal;font-weight:800;color:var(--lf)}
+.cm{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--bg);border:2px solid var(--ln);border-radius:16px;padding:8px 2px;font:inherit;color:var(--ink);cursor:pointer;min-width:0;min-height:62px}.cm.on{border-color:var(--ac);background:var(--soft);font-weight:800}
+.strip{display:flex;gap:2px;margin-top:8px}.sq{flex:1;height:14px;border-radius:3px;background:var(--ln);max-width:18px}.sq.on{background:var(--lf)}.sq.no{opacity:.35}
+.heat{display:flex;gap:4px;margin-top:10px}.hcol{display:flex;flex-direction:column;gap:4px;flex:1}.hc{display:block;aspect-ratio:1;border-radius:4px;background:var(--ln)}.hc.fut{opacity:.25}.hc.no{opacity:.35}.hc.l1{background:#C9DDB9}.hc.l2{background:#9BC48B}.hc.l3{background:#6FA663}.hc.l4{background:#3F7A3B}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--pn);border-top:2px solid var(--ln);padding:6px 3px calc(6px + env(safe-area-inset-bottom,0px));z-index:8}
+nav button{flex:1;min-width:0;background:none;border:0;font:inherit;font-size:10px;letter-spacing:-.2px;color:var(--mu);padding:4px 0;cursor:pointer;min-height:48px;border-radius:14px}nav button.on{color:var(--ac);font-weight:800;background:var(--soft)}nav span{display:block;font-size:20px;line-height:1.2}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.gl{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.mx{overflow-x:auto;margin-top:10px;-webkit-overflow-scrolling:touch}.mxt{border-collapse:separate;border-spacing:3px;font-size:12.5px;min-width:100%}
+.mxt th{font-size:11px;color:var(--mu);font-weight:700;padding:3px 2px;text-align:center;white-space:nowrap}.mxt td{text-align:center;padding:7px 4px;border-radius:7px;background:var(--soft);white-space:nowrap;min-width:46px}
+.mxt td:first-child{text-align:left;position:sticky;left:0;background:var(--pn);z-index:1;min-width:112px;max-width:132px;white-space:normal;padding-left:2px}
+.mxt td.s1{background:#BFDDB4;color:#17341C}.mxt td.s2{background:#DDEBC4;color:#2A3B16}.mxt td.s3{background:#F5DDA0;color:#4A3408}.mxt td.s4{background:#F2B79B;color:#5B2410}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .mxt td.s1{background:#2F6B3A;color:#E6F4E4}:root:not([data-theme="light"]) .mxt td.s2{background:#4A6B32;color:#EEF4DC}:root:not([data-theme="light"]) .mxt td.s3{background:#8A6A1D;color:#FFF3D1}:root:not([data-theme="light"]) .mxt td.s4{background:#9A4A2A;color:#FFE9DE}}
+:root[data-theme="dark"] .mxt td.s1{background:#2F6B3A;color:#E6F4E4}:root[data-theme="dark"] .mxt td.s2{background:#4A6B32;color:#EEF4DC}:root[data-theme="dark"] .mxt td.s3{background:#8A6A1D;color:#FFF3D1}:root[data-theme="dark"] .mxt td.s4{background:#9A4A2A;color:#FFE9DE}
+.mxt tr.tot td{background:transparent;font-weight:700;border-top:1px dashed var(--ln);border-radius:0}.mxt tr.tot td:first-child{background:var(--pn)}
+.lnk{background:none;border:0;font:inherit;color:var(--ink);text-align:left;padding:0;cursor:pointer;font-weight:700}
+.tbl.cmp{font-size:12px}.tbl.cmp td,.tbl.cmp th{padding:7px 3px;white-space:nowrap}.tbl tr.tot td{font-weight:700}
+</style></head><body>
+<main id="app"></main><nav id="nav" aria-label="Main"></nav>
+<script>
+'use strict';
+/* =====================================================================
+   MONTH MATRIX
+   Fill it in once a month. Every category, every month, compared, graphed, targeted and streaked.
+   One file, vanilla JS, works offline.
+
+   THE MONTHLY ENTRY mirrors the Monzo "Money out" breakdown: starting balance, money in, one total per category.
+   Investments and Emergency fund are extra categories, so what you put away is tracked like everything else.
+
+   SECTIONS  1 Config · 2 Utilities · 3 State · 4 Month maths · 5 Comparisons · 6 Targets & scoring · 7 Streaks
+             8 Savings projections · 9 Charts · 10 Views · 11 Actions · 12 Export/import · 13 Boot
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. CONFIG
+   --------------------------------------------------------------------- */
+const APP = 'Month Matrix', KEY = 'mm_v1';
+/* kinds decide how a target is judged:
+   need  = stay at or under (5% slack)    want  = stay under     avoid = lower is better, stay under
+   ignore = transfers/pending: left out of spending stats    save = going over target is the win */
+const KINDS = {
+  need: { name: 'Needs', blurb: 'Stay at or under target (5% slack)', col: '#5B7FA6' },
+  want: { name: 'Wants', blurb: 'Stay under target', col: '#8E6BBF' },
+  avoid: { name: 'Avoidable', blurb: 'Things you wish you had skipped: lower is better', col: '#D9622B' },
+  ignore: { name: 'Ignored', blurb: 'Transfers and pending: left out of spending stats', col: '#8FA3B5' },
+  save: { name: 'Saving', blurb: 'Over target is a win', col: '#4C7A46' }
+};
+const KIND_ORDER = ['need', 'want', 'avoid', 'ignore', 'save'];
+/* In the order your Monzo summary lists them, then the two savings categories. */
+const DEFAULT_CATS = [
+  { id: 'c_ess', name: 'Essentials', kind: 'need', icon: '🏠', tgt: 0 },
+  { id: 'c_hol', name: 'Holiday and leisure', kind: 'want', icon: '🌍', tgt: 0 },
+  { id: 'c_ign', name: 'Ignore/Transfers', kind: 'ignore', icon: '🔁', tgt: 0 },
+  { id: 'c_avd', name: 'Could have avoided', kind: 'avoid', icon: '🛍️', tgt: 0 },
+  { id: 'c_wrk', name: 'Work and necessary travel', kind: 'need', icon: '🚆', tgt: 0 },
+  { id: 'c_lif', name: 'Lifestyle', kind: 'want', icon: '☕', tgt: 0 },
+  { id: 'c_pen', name: 'Pending', kind: 'ignore', icon: '⏳', tgt: 0 },
+  { id: 'c_ccp', name: 'Credit card pay off', kind: 'ignore', icon: '💳', tgt: 0 },
+  { id: 'c_stg', name: 'Stag', kind: 'want', icon: '😀', tgt: 0 },
+  { id: 'c_inv', name: 'Investments', kind: 'save', role: 'inv', icon: '📈', tgt: 0 },
+  { id: 'c_ef', name: 'Emergency fund', kind: 'save', role: 'ef', icon: '🛟', tgt: 0 }
+];
+const HIT = 0.8;                 // a month is a "hit" when this share of your targets are met
+const NEED_SLACK = 0.05;
+const DEFAULTS = { name: '', cur: '£', saveRate: 20, efMonths: 3, invRate: 7, invGoal: 1000000, efGoal: 0 };
+const PALETTE = ['#D9622B', '#4C7A46', '#5B7FA6', '#B4690E', '#8E6BBF', '#C2477A', '#2A9D8F', '#9A7B4F', '#E0A800', '#3E7CB1', '#7A8450', '#B5524A', '#6B7FD7', '#C98B2B'];
+
+/* ---------------------------------------------------------------------
+   2. UTILITIES
+   --------------------------------------------------------------------- */
+const $ = s => document.querySelector(s);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const fmt = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const ds = o => { const d = new Date(); d.setDate(d.getDate() + o); return fmt(d); };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pc = x => Math.round(x * 100);
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const r2 = x => Math.round((+x || 0) * 100) / 100;
+const cur = () => (S && S.cfg.cur) || '£';
+const M = (n, dp) => { const v = Math.abs(+n || 0), s = dp ? v.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp }) : Math.round(v).toLocaleString('en-GB'); return ((+n || 0) < 0 && Math.round(v * (dp ? 100 : 1)) !== 0 ? '−' : '') + cur() + s; };
+const sgM = (n, dp) => (n > 0.004 ? '+' : n < -0.004 ? '−' : '') + cur() + Math.abs(+n || 0).toLocaleString('en-GB', { minimumFractionDigits: dp || 0, maximumFractionDigits: dp || 0 });
+const ym = (y, m) => y + '-' + String(m).padStart(2, '0');
+const addM = (k, n) => { const t = +k.slice(0, 4) * 12 + (+k.slice(5) - 1) + n; return ym(Math.floor(t / 12), (t % 12) + 1); };
+const diffM = (a, b) => (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5) - +a.slice(5));
+const mLab = (k, long) => new Date(k + '-15T12:00:00').toLocaleDateString('en-GB', { month: long ? 'long' : 'short', year: long ? 'numeric' : '2-digit' });
+const curMonth = () => ds(0).slice(0, 7);
+const bar = (v, cls) => `<div class="bar ${cls || ''}" role="progressbar" aria-valuenow="${pc(clamp(v, 0, 1))}" aria-valuemin="0" aria-valuemax="100"><i style="width:${clamp(v, 0, 1) * 100}%"></i></div>`;
+
+/* ---------------------------------------------------------------------
+   3. STATE
+   S = { v, cfg, cats:[{id,name,kind,icon,tgt,role?}], months:{ 'YYYY-MM': { sb, in, eb, v:{catId:amount}, tg:{catId:target}, b:{catId:balance}, note } }, created, lastExport }
+   sb/eb = starting/ending balance (optional). tg = the targets that applied that month (a snapshot, so changing targets doesn't rewrite history).
+   b = optional end-of-month balance for a saving category (the investments pot, the emergency fund).
+   --------------------------------------------------------------------- */
+let S = null, V = 'home', SEL = null, MSG = '', RST = 0, DT = false, IMPQ = null, IMPERR = '', CSVT = '', DNOTE = '', SERR = '', ME = null, CE = null, DELM = '', _c = {};
+function save() { _c = {}; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+function newState(cfg) { return { v: 1, cfg: Object.assign({}, DEFAULTS, cfg), cats: DEFAULT_CATS.map(c => Object.assign({}, c)), months: {}, created: ds(0), lastExport: null }; }
+function migrate(raw) {
+  if (!raw || typeof raw !== 'object' || !raw.cfg) return null;
+  const n0 = x => isFinite(+x) ? +x : 0, n = newState({ cur: String(raw.cfg.cur || '£').slice(0, 3), name: String(raw.cfg.name || '').slice(0, 24), saveRate: n0(raw.cfg.saveRate) || 20, efMonths: n0(raw.cfg.efMonths) || 3, invRate: n0(raw.cfg.invRate), invGoal: n0(raw.cfg.invGoal) || 1000000, efGoal: n0(raw.cfg.efGoal) });
+  n.created = raw.created || ds(0); n.lastExport = raw.lastExport || null;
+  if (Array.isArray(raw.cats) && raw.cats.length) n.cats = raw.cats.filter(c => c && c.id && c.name).slice(0, 24).map(c => ({ id: String(c.id), name: String(c.name).slice(0, 30), kind: KINDS[c.kind] ? c.kind : 'want', icon: String(c.icon || '•').slice(0, 4), tgt: Math.max(0, n0(c.tgt)), role: c.role === 'inv' || c.role === 'ef' ? c.role : undefined }));
+  const ids = n.cats.map(c => c.id);
+  Object.keys(raw.months && typeof raw.months === 'object' ? raw.months : {}).forEach(k => {
+    if (!/^\d{4}-\d{2}$/.test(k)) return; const m = raw.months[k] || {}, o = { sb: m.sb == null || m.sb === '' ? null : n0(m.sb), in: n0(m.in), eb: m.eb == null || m.eb === '' ? null : n0(m.eb), v: {}, tg: {}, b: {}, note: String(m.note || '').slice(0, 120) };
+    ['v', 'tg', 'b'].forEach(f => Object.keys(m[f] && typeof m[f] === 'object' ? m[f] : {}).forEach(id => { if (ids.includes(id) && m[f][id] !== '' && m[f][id] != null && isFinite(+m[f][id])) o[f][id] = r2(m[f][id]); }));
+    n.months[k] = o;
+  });
+  return n;
+}
+function load() { try { return migrate(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return null; } }
+
+/* ---------------------------------------------------------------------
+   4. MONTH MATHS
+   --------------------------------------------------------------------- */
+const MK = () => _c.mk || (_c.mk = Object.keys(S.months).sort());
+const mo = k => S.months[k] || null;
+const latestK = () => { const a = MK(); return a.length ? a[a.length - 1] : null; };
+const catById = id => S.cats.find(c => c.id === id);
+const role = r => S.cats.find(c => c.role === r);
+const val = (k, id) => { const m = S.months[k]; return m && m.v[id] != null ? m.v[id] : 0; };
+const has = (k, id) => { const m = S.months[k]; return !!(m && m.v[id] != null); };
+const kinds = ks => S.cats.filter(c => ks.includes(c.kind));
+const sumK = (k, ks) => kinds(ks).reduce((s, c) => s + val(k, c.id), 0);
+const spendOf = k => sumK(k, ['need', 'want', 'avoid']);
+const ignoredOf = k => sumK(k, ['ignore']);
+const savedOf = k => sumK(k, ['save']);
+const outOf = k => spendOf(k) + ignoredOf(k) + savedOf(k);
+const inOf = k => { const m = S.months[k]; return m ? m.in : 0; };
+const leftOf = k => inOf(k) - outOf(k);
+const rateOf = k => inOf(k) > 0 ? savedOf(k) / inOf(k) : null;
+const tgOf = (k, c) => { const m = S.months[k]; return m && m.tg[c.id] != null ? m.tg[c.id] : c.tgt; };
+/* the figure a month is judged on for a metric */
+const METRICS = {
+  in: { n: 'Money in', f: inOf, good: 1 }, spend: { n: 'Spending', f: spendOf, good: -1 }, saved: { n: 'Saved', f: savedOf, good: 1 }, left: { n: 'Left over', f: leftOf, good: 1 },
+  need: { n: 'Needs', f: k => sumK(k, ['need']), good: -1 }, want: { n: 'Wants', f: k => sumK(k, ['want']), good: -1 }, avoid: { n: 'Avoidable', f: k => sumK(k, ['avoid']), good: -1 }, out: { n: 'Money out (all)', f: outOf, good: -1 }
+};
+/* mean of f over the n calendar months before k that have data */
+function winAvg(f, k, n) { const v = []; for (let i = 1; i <= n; i++) { const kk = addM(k, -i); if (mo(kk)) v.push(f(kk)); } return { avg: mean(v), n: v.length }; }
+function cmp(f, k) { const p = addM(k, -1), ly = addM(k, -12); return { cur: f(k), prev: mo(p) ? f(p) : null, a3: winAvg(f, k, 3).avg, a12: winAvg(f, k, 12).avg, ly: mo(ly) ? f(ly) : null }; }
+function slope(vals) {   // least-squares change per step over an array (nulls skipped)
+  const p = vals.map((y, x) => y == null ? null : { x, y }).filter(Boolean); if (p.length < 3) return null;
+  const mx = mean(p.map(q => q.x)), my = mean(p.map(q => q.y)); let sxx = 0, sxy = 0; p.forEach(q => { sxx += (q.x - mx) ** 2; sxy += (q.x - mx) * (q.y - my); }); return sxx ? sxy / sxx : null;
+}
+/* the balance trail: your own ending balance if you entered one, else the last known one carried by money left over */
+function balanceOf(k) { const m = mo(k); if (m && m.eb != null) return m.eb; return null; }
+function reconcile(k) { const m = mo(k); if (!m || m.sb == null || m.eb == null) return null; return m.eb - (m.sb + inOf(k) - outOf(k)); }
+
+/* ---------------------------------------------------------------------
+   5/6. TARGETS & SCORING
+   --------------------------------------------------------------------- */
+function okOf(k, c) {
+  const t = tgOf(k, c); if (!(t > 0) || c.kind === 'ignore') return null; const v = val(k, c.id);
+  return c.kind === 'save' ? v >= t : c.kind === 'need' ? v <= t * (1 + NEED_SLACK) : v <= t;
+}
+function scoreOf(k) { let n = 0, ok = 0; S.cats.forEach(c => { const r = okOf(k, c); if (r == null) return; n++; if (r) ok++; }); return { n, ok, pct: n ? ok / n : null, hit: n > 0 && ok / n >= HIT }; }
+/* suggested targets from what you've actually done: needs at your average, wants and avoidable trimmed 5%, saving at your average */
+function suggestTargets() {
+  const ks = MK().slice(-6), out = {}; if (ks.length < 2) return out;
+  S.cats.forEach(c => { if (c.kind === 'ignore') return; const a = mean(ks.map(k => val(k, c.id))), f = c.kind === 'avoid' || c.kind === 'want' ? 0.95 : 1; if (a > 0) out[c.id] = Math.round(a * f / 10) * 10; });
+  return out;
+}
+
+/* ---------------------------------------------------------------------
+   7. STREAKS: consecutive calendar months, ending at your latest month. A missing month breaks a streak.
+   --------------------------------------------------------------------- */
+function habits() {
+  const h = [];
+  h.push({ k: 'hit', n: 'Month on target (80%+ of targets met)', i: '🎯', f: k => !!mo(k) && scoreOf(k).hit });
+  h.push({ k: 'needs', n: 'All needs on target', i: '🏠', f: k => !!mo(k) && kinds(['need']).every(c => okOf(k, c) !== false) && kinds(['need']).some(c => okOf(k, c) != null) });
+  h.push({ k: 'wants', n: 'All wants and avoidable on target', i: '🛍️', f: k => !!mo(k) && kinds(['want', 'avoid']).every(c => okOf(k, c) !== false) && kinds(['want', 'avoid']).some(c => okOf(k, c) != null) });
+  S.cats.filter(c => c.kind !== 'ignore' && MK().some(k => tgOf(k, c) > 0)).forEach(c => h.push({ k: 'c_' + c.id, n: c.name + (c.kind === 'save' ? ' target met' : ' under target'), i: c.icon, f: k => !!mo(k) && okOf(k, c) === true }));
+  h.push({ k: 'saved', n: 'Put something away', i: '💰', f: k => !!mo(k) && savedOf(k) > 0 });
+  h.push({ k: 'rate', n: `Saved ${S.cfg.saveRate}%+ of money in`, i: '📊', f: k => !!mo(k) && rateOf(k) != null && rateOf(k) * 100 >= S.cfg.saveRate });
+  h.push({ k: 'pos', n: 'Money in covered everything', i: '➕', f: k => !!mo(k) && inOf(k) > 0 && leftOf(k) >= 0 });
+  h.push({ k: 'down', n: 'Spending down on last month', i: '📉', f: k => !!mo(k) && !!mo(addM(k, -1)) && spendOf(k) < spendOf(addM(k, -1)) });
+  h.push({ k: 'avgl', n: 'Avoidable spend under your average', i: '✂️', f: k => { if (!mo(k)) return false; const a = winAvg(METRICS.avoid.f, k, 12).avg; return a != null && METRICS.avoid.f(k) <= a; } });
+  return h;
+}
+function streakOf(f) {
+  const ks = MK(); if (!ks.length) return { cur: 0, best: 0, total: 0, n: 0 }; const last = ks[ks.length - 1], first = ks[0];
+  let cur = 0, k = last; while (diffM(first, k) >= 0 && f(k)) { cur++; k = addM(k, -1); }
+  let best = 0, run = 0, total = 0, n = 0; for (let x = first; diffM(x, last) >= 0; x = addM(x, 1)) { n++; if (f(x)) { run++; total++; best = Math.max(best, run); } else run = 0; }
+  return { cur, best, total, n };
+}
+
+/* ---------------------------------------------------------------------
+   8. SAVINGS PROJECTIONS
+   Balance = your entered end-of-month balance if you gave one, otherwise everything you've put in so far.
+   --------------------------------------------------------------------- */
+function potState(r) {
+  const c = role(r); if (!c) return null; const ks = MK(); if (!ks.length) return null;
+  let bal = 0, balK = null; for (let i = ks.length - 1; i >= 0; i--) { const m = mo(ks[i]); if (m.b[c.id] != null) { bal = m.b[c.id]; balK = ks[i]; break; } }
+  const after = ks.filter(k => balK == null || k > balK); bal += after.reduce((s, k) => s + val(k, c.id), 0);
+  if (balK == null) bal = ks.reduce((s, k) => s + val(k, c.id), 0);
+  const last6 = ks.slice(-6).map(k => val(k, c.id)), avg = mean(last6) || 0, total = ks.reduce((s, k) => s + val(k, c.id), 0);
+  return { c, bal, avg, total, months: ks.length, last6 };
+}
+/* months until `target`, adding `contrib` a month, growing at `ratePct` a year (monthly compounding) */
+function monthsTo(bal, target, contrib, ratePct) {
+  if (bal >= target) return { done: true }; const i = (ratePct || 0) / 1200; let n;
+  if (contrib <= 0 && i <= 0) return { never: true };
+  if (i < 1e-9) n = (target - bal) / contrib; else { const k = contrib / i, num = target + k, den = bal + k; if (den <= 0 || num <= 0) return { never: true }; n = Math.log(num / den) / Math.log(1 + i); }
+  if (!isFinite(n) || n < 0 || n > 1800) return { never: true };
+  return { months: n, years: n / 12 };
+}
+const fvMonthly = (c, ratePct, years) => { const i = ratePct / 1200, n = years * 12; return i ? c * ((Math.pow(1 + i, n) - 1) / i) : c * n; };
+function efTarget() {
+  if (S.cfg.efGoal > 0) return { target: S.cfg.efGoal, how: 'your own target' };
+  const ks = MK().slice(-6); if (!ks.length) return { target: 0, how: '' };
+  const per = mean(ks.map(k => sumK(k, ['need']))) || 0; return { target: Math.round(per * S.cfg.efMonths / 50) * 50, how: `${S.cfg.efMonths} months of needs (${M(per)} a month)` };
+}
+const whenK = (k0, months) => mLab(addM(k0, Math.ceil(months)), true);
+
+/* ---------------------------------------------------------------------
+   9. CHART ENGINE
+   layers: line | dots | bars | stack | band | h | v. One unit group -> a real labelled axis; several -> each scaled to its own range.
+   --------------------------------------------------------------------- */
+function chart(o) {
+  const W = 320, H = o.H || 170, span = Math.max(1, o.span), groups = [...new Set(o.layers.map(l => l.u || 'a'))], real = groups.length === 1, L = real ? 48 : 10, R = 10, T = 8, B = 22, sc = {};
+  const X = x => L + x * ((W - L - R) / span), yf = o.yfmt || (v => M(v));
+  groups.forEach(g => {
+    const vals = []; o.layers.filter(l => (l.u || 'a') === g).forEach(l => { (l.pts || []).forEach(p => { if (p) { vals.push(p.y); if (p.lo != null) vals.push(p.lo, p.hi); } }); if (l.type === 'h' && !l.free) vals.push(l.y); });
+    if (o.zero) vals.push(0); let lo = vals.length ? Math.min(...vals) : 0, hi = vals.length ? Math.max(...vals) : 1; const pad = (hi - lo) * 0.08 || 1;
+    sc[g] = { lo: o.zero && lo >= 0 ? 0 : lo - pad, hi: hi + pad }; if (o.ymin != null && real) sc[g].lo = o.ymin; if (o.ymax != null && real) sc[g].hi = o.ymax;
+  });
+  const Y = (g, v) => T + (H - T - B) * (1 - (v - sc[g].lo) / (sc[g].hi - sc[g].lo)), g0 = groups[0], pts = l => (l.pts || []).filter(Boolean);
+  const body = o.layers.map(l => { const g = l.u || 'a', c = l.c || 'var(--ac)', p = pts(l);
+    if (l.type === 'band') { if (p.length < 2) return ''; const up = p.map(q => X(q.x).toFixed(1) + ',' + Y(g, q.hi).toFixed(1)), dn = p.slice().reverse().map(q => X(q.x).toFixed(1) + ',' + Y(g, q.lo).toFixed(1)); return `<polygon points="${up.concat(dn).join(' ')}" fill="${c}" opacity="${l.o || 0.18}"/>`; }
+    if (l.type === 'line') return p.length < 2 ? '' : `<polyline fill="none" stroke="${c}" stroke-width="${l.w || 2.6}" ${l.dash ? `stroke-dasharray="${l.dash}"` : ''} stroke-linecap="round" stroke-linejoin="round" opacity="${l.o || 1}" points="${p.map(q => X(q.x).toFixed(1) + ',' + Y(g, q.y).toFixed(1)).join(' ')}"/>${l.dots ? p.map(q => `<circle cx="${X(q.x).toFixed(1)}" cy="${Y(g, q.y).toFixed(1)}" r="3" fill="${q.hollow ? 'var(--pn)' : c}" stroke="${c}" stroke-width="1.6"/>`).join('') : ''}`;
+    if (l.type === 'dots') return p.map(q => `<circle cx="${X(q.x).toFixed(1)}" cy="${Y(g, q.y).toFixed(1)}" r="${l.r || 3}" fill="${q.c || c}" opacity="${l.o || 0.85}"/>`).join('');
+    if (l.type === 'bars') { const bw = Math.max(2, Math.min(l.bw || 22, (W - L - R) / (span + 1) * 0.72)), y0 = Y(g, clamp(0, sc[g].lo, sc[g].hi)); return p.map(q => { const y = Y(g, q.y); return `<rect x="${(X(q.x) - bw / 2).toFixed(1)}" y="${Math.min(y, y0).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(1, Math.abs(y - y0)).toFixed(1)}" rx="2" fill="${q.c || c}" opacity="${l.o || 0.9}"/>`; }).join(''); }
+    if (l.type === 'stack') { const bw = Math.max(3, Math.min(l.bw || 24, (W - L - R) / (span + 1) * 0.72)); return p.map(q => { let acc = 0; return q.parts.map(s => { const y1 = Y(g, acc + s.y), y0 = Y(g, acc); acc += s.y; return s.y > 0 ? `<rect x="${(X(q.x) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.6, y0 - y1).toFixed(1)}" fill="${s.c}"/>` : ''; }).join(''); }).join(''); }
+    if (l.type === 'h') return `<path d="M${L} ${Y(g, l.y).toFixed(1)}H${W - R}" stroke="${c}" stroke-dasharray="5 4" stroke-width="1.8" opacity=".85"/>${l.t ? `<text x="${W - R}" y="${(Y(g, l.y) + (l.below ? 12 : -4)).toFixed(1)}" text-anchor="end" font-size="10" fill="${c}">${esc(l.t)}</text>` : ''}`;
+    return ''; }).join('');
+  const axis = real ? `<text x="2" y="${(Y(g0, sc[g0].hi) + 9).toFixed(0)}" font-size="10" fill="var(--mu)">${yf(sc[g0].hi)}</text><text x="2" y="${Y(g0, sc[g0].lo).toFixed(0)}" font-size="10" fill="var(--mu)">${yf(sc[g0].lo)}</text>${sc[g0].lo < 0 && sc[g0].hi > 0 ? `<path d="M${L} ${Y(g0, 0).toFixed(1)}H${W - R}" stroke="var(--ln)" stroke-width="1.5"/>` : ''}` : '';
+  const xl = (o.xl || []).map((l, i, a) => `<text x="${X(l.x).toFixed(1)}" y="${H - 5}" font-size="10" text-anchor="${i === 0 ? 'start' : i === a.length - 1 ? 'end' : 'middle'}" fill="var(--mu)">${esc(l.t)}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;margin-top:6px" role="img" aria-label="${esc(o.label || 'Graph')}">${axis}<path d="M${L} ${H - B}H${W - R}" stroke="var(--ln)" stroke-width="2"/>${body}${xl}</svg>`;
+}
+const legend = items => `<div class="mt">${items.map(i => `<span class="lg"><i style="background:${i.c}"></i>${esc(i.n)}${i.v ? ' <b>' + i.v + '</b>' : ''}</span>`).join('')}</div>`;
+const chip = (onclick, label, on, col) => `<button class="chip ${on ? 'on' : ''}" ${on && col ? `style="border-color:${col};background:${col}22"` : ''} onclick="${onclick}">${col ? `<span class="dot" style="background:${col}"></span>` : ''}${esc(label)}</button>`;
+const colorOf = id => PALETTE[Math.max(0, S.cats.findIndex(c => c.id === id)) % PALETTE.length];
+const coachStrip = () => MSG ? `<div class="coach" role="status" aria-live="polite">💬 ${esc(MSG)}</div>` : '';
+/* a change figure, coloured by whether that direction is good (good: -1 means lower is better) */
+const dlt = (v, good, dp) => v == null ? '<span class="mu">–</span>' : `<b class="${Math.abs(v) < 0.5 ? '' : (v < 0) === (good < 0) ? 'good' : 'bad'}">${sgM(v, dp)}</b>`;
+const pct = (a, b) => b ? (a - b) / Math.abs(b) : null;
+const monthsRange = n => { const ks = MK(); return n ? ks.slice(-n) : ks; };
+const mAxis = ks => ks.length > 1 ? [{ x: 0, t: mLab(ks[0]) }, ...(ks.length > 6 ? [{ x: Math.round((ks.length - 1) / 2), t: mLab(ks[Math.round((ks.length - 1) / 2)]) }] : []), { x: ks.length - 1, t: mLab(ks[ks.length - 1]) }] : [{ x: 0, t: mLab(ks[0]) }];
+
+/* ---------------------------------------------------------------------
+   10. VIEWS
+   --------------------------------------------------------------------- */
+let MR = 6, MC = null, CR = 12, CSEL = ['spend', 'in'], CI = false, CA = null, CB = null, WI = { ef: '', inv: '' }, TAPPLY = true;
+const spendCats = () => kinds(['need', 'want', 'avoid']);
+
+/* ---------- HOME ---------- */
+function vHome() {
+  const ks = MK(); if (!ks.length) return coachStrip() + `<div class="card"><h2>Month Matrix</h2><div class="mu mt">Add your first month and everything fills in: comparisons, the category matrix, graphs, targets, streaks and projections. It takes about two minutes a month, straight from your Monzo breakdown.</div><div class="row mt"><button class="btn" onclick="meNew()">Add my first month</button></div></div>`;
+  const k = SEL && mo(SEL) ? SEL : latestK(), i = ks.indexOf(k), sc = scoreOf(k), pk = addM(k, -1), hasP = !!mo(pk), rec = reconcile(k);
+  const c = Object.fromEntries(Object.keys(METRICS).map(m => [m, cmp(METRICS[m].f, k)])), r = rateOf(k), cats = S.cats.filter(x => x.kind !== 'ignore'), ign = kinds(['ignore']);
+  const spendDiff = c.spend.prev != null ? c.spend.cur - c.spend.prev : null, vs12 = c.spend.a12 != null ? c.spend.cur - c.spend.a12 : null;
+  const verdict = spendDiff != null ? `You spent ${M(Math.abs(spendDiff))} ${spendDiff <= 0 ? 'less' : 'more'} than last month${c.spend.prev ? ` (${Math.abs(pc(spendDiff / c.spend.prev))}%)` : ''}${vs12 != null ? `, and ${M(Math.abs(vs12))} ${vs12 <= 0 ? 'under' : 'over'} your 12-month average` : ''}.` : 'This is your first month, so comparisons start next month.';
+  const movers = cats.filter(x => x.kind !== 'save' && hasP).map(x => ({ x, d: val(k, x.id) - val(pk, x.id) })).filter(m => Math.abs(m.d) >= 1).sort((a, b) => b.d - a.d);
+  const row = x => { const v = val(k, x.id), t = tgOf(k, x), ok = okOf(k, x), d = hasP ? v - val(pk, x.id) : null;
+    return `<div class="mt"><div class="gl"><span>${esc(x.icon)} <b>${esc(x.name)}</b></span><span><b>${M(v)}</b>${t > 0 ? `<span class="mu sm"> / ${M(t)}</span>` : ''}</span></div>${t > 0 ? bar(v / t, ok ? 'ok' : x.kind === 'save' ? 'wn' : 'hi') : ''}${d != null ? `<div class="mu sm">${sgM(d)} on last month</div>` : ''}</div>`; };
+  const sk = habits().map(h => ({ h, s: streakOf(h.f) })).filter(x => x.s.cur >= 2).sort((a, b) => b.s.cur - a.s.cur).slice(0, 3);
+  return coachStrip() + `
+  <div class="card"><div class="row sb"><button class="chip" ${i <= 0 ? 'disabled' : ''} onclick="selM('${ks[i - 1]}')" aria-label="Earlier month">‹</button><div style="text-align:center"><h2 style="margin:0">${mLab(k, true)}</h2><div class="mu sm">${sc.n ? `${sc.ok} of ${sc.n} targets met${sc.hit ? ' · a hit ✓' : ''}` : 'Set targets in Settings to score months'}</div></div><button class="chip" ${i >= ks.length - 1 ? 'disabled' : ''} onclick="selM('${ks[i + 1]}')" aria-label="Later month">›</button></div>
+   <div class="tiles"><div class="tile"><b>${M(inOf(k))}</b><span>Money in</span></div><div class="tile"><b>${M(spendOf(k))}</b><span>Spent</span></div><div class="tile"><b>${M(savedOf(k))}</b><span>Saved${r != null ? ' (' + pc(r) + '%)' : ''}</span></div>
+   <div class="tile"><b class="${leftOf(k) < 0 ? 'bad' : ''}">${M(leftOf(k))}</b><span>Left over</span></div><div class="tile"><b>${M(ignoredOf(k))}</b><span>Transfers, pending</span></div><div class="tile"><b>${M(outOf(k))}</b><span>Money out, all</span></div></div>
+   <div class="note"><b>${verdict}</b></div>
+   ${rec != null && Math.abs(rec) >= 1 ? `<div class="warnbox">Your balance moved ${M(Math.abs(rec))} ${rec > 0 ? 'more' : 'less'} than the figures explain. Worth a look if it keeps happening.</div>` : ''}
+   <div class="row mt"><button class="btn g" onclick="meEdit('${k}')">Edit this month</button><button class="btn g" onclick="meNew()">+ Add a month</button></div></div>
+  <div class="card"><h3>Compared with</h3><div class="mu sm">Change in each, against ${mLab(pk)}, your last 3 months, your last 12 months, and ${mLab(addM(k, -12))}. Green is the good direction.</div>
+   <div style="overflow-x:auto"><table class="tbl cmp"><tr><th></th><th>Now</th><th>vs last</th><th>vs 3-mo</th><th>vs 12-mo</th><th>vs last yr</th></tr>
+   ${['in', 'spend', 'need', 'want', 'avoid', 'saved', 'left'].map(m => { const q = c[m], g = METRICS[m].good; return `<tr><td>${METRICS[m].n}</td><td><b>${M(q.cur)}</b></td><td>${dlt(q.prev != null ? q.cur - q.prev : null, g)}</td><td>${dlt(q.a3 != null ? q.cur - q.a3 : null, g)}</td><td>${dlt(q.a12 != null ? q.cur - q.a12 : null, g)}</td><td>${dlt(q.ly != null ? q.cur - q.ly : null, g)}</td></tr>`; }).join('')}</table></div></div>
+  <div class="card"><h3>Where it went</h3>${cats.map(row).join('')}${ign.length ? `<div class="mu sm mt">Left out of the stats: ${ign.map(x => `${esc(x.name)} ${M(val(k, x.id))}`).join(' · ')}</div>` : ''}</div>
+  ${movers.length ? `<div class="card"><h3>Biggest movers since last month</h3>${[...movers.slice(0, 3).filter(m => m.d > 0), ...movers.slice(-3).reverse().filter(m => m.d < 0)].map(m => `<div class="meal"><span>${esc(m.x.icon)} ${esc(m.x.name)}</span><span>${dlt(m.d, -1)}</span></div>`).join('') || '<div class="mu">Nothing moved much.</div>'}</div>` : ''}
+  ${sk.length ? `<div class="card"><h3>Streaks going</h3>${sk.map(x => `<div class="meal"><span>${x.h.i} ${esc(x.h.n)}</span><b>${x.s.cur} 🔥</b></div>`).join('')}<div class="row mt"><button class="btn g" onclick="go('streaks')">All streaks</button></div></div>` : ''}`;
+}
+
+/* ---------- MONTHS: the monthly entry ---------- */
+function meTotals() {
+  if (!ME) return ''; const g = id => +ME.v[id] || 0, tot = k => S.cats.filter(c => k.includes(c.kind)).reduce((s, c) => s + g(c.id), 0), inn = +ME.in || 0, out = tot(['need', 'want', 'avoid', 'ignore', 'save']), left = inn - out, sav = tot(['save']), chk = ME.chk !== '' ? +ME.chk : null;
+  const rec = ME.sb !== '' && ME.eb !== '' ? (+ME.eb) - ((+ME.sb) + inn - out) : null;
+  return `<div class="row sb"><span>Money out, all categories</span><b>${M(out, 2)}</b></div><div class="row sb"><span>Spending (needs, wants, avoidable)</span><b>${M(tot(['need', 'want', 'avoid']), 2)}</b></div><div class="row sb"><span>Saved</span><b>${M(sav, 2)}${inn > 0 ? ' (' + pc(sav / inn) + '%)' : ''}</b></div><div class="row sb"><span>Left over</span><b class="${left < 0 ? 'bad' : 'good'}">${M(left, 2)}</b></div>
+   ${chk != null && Math.abs(chk - out) >= 0.5 ? `<div class="warnbox">Your categories add up to ${M(out, 2)} but you typed ${M(chk, 2)} as the Monzo total, so ${M(Math.abs(chk - out), 2)} is missing or doubled.</div>` : chk != null ? '<div class="note">✓ Matches your Monzo total.</div>' : ''}
+   ${rec != null && Math.abs(rec) >= 1 ? `<div class="mu sm mt">Your balances moved ${M(Math.abs(rec), 2)} ${rec > 0 ? 'more' : 'less'} than these figures explain (transfers between your own pots, or something missing).</div>` : ''}`;
+}
+function meUpdate() { const el = $('#metot'); if (el) el.innerHTML = meTotals(); }
+function vMonths() {
+  if (ME) return vMonthForm();
+  const ks = MK().slice().reverse();
+  return coachStrip() + `<div class="card"><div class="row sb"><h2 style="margin:0">Months</h2><button class="btn" onclick="meNew()">+ Add month</button></div><div class="mu mt">Once a month, from your Monzo summary: starting balance, money in, then each category's total.</div></div>
+   ${ks.map(k => { const sc = scoreOf(k), r = rateOf(k); return `<div class="card" style="margin-top:10px"><div class="row sb"><b style="font-size:18px">${mLab(k, true)}</b><span class="mu sm">${sc.n ? `${sc.ok}/${sc.n} on target${sc.hit ? ' ✓' : ''}` : ''}</span></div>
+     <div class="mu sm">In ${M(inOf(k))} · spent ${M(spendOf(k))} · saved ${M(savedOf(k))}${r != null ? ' (' + pc(r) + '%)' : ''} · left ${M(leftOf(k))}</div>
+     <div class="row mt"><button class="chip" onclick="selM('${k}');go('home')">Open</button><button class="chip" onclick="meEdit('${k}')">Edit</button><button class="chip" onclick="delMonth('${k}')">${DELM === k ? 'Tap again to delete' : 'Delete'}</button></div></div>`; }).join('') || '<div class="card"><div class="mu">No months yet.</div></div>'}`;
+}
+function vMonthForm() {
+  const k = ME.k, pk = addM(k, -1), prevEb = mo(pk) && mo(pk).eb != null ? mo(pk).eb : null, exists = !!mo(k);
+  const field = c => { const t = (exists ? tgOf(k, c) : c.tgt), pv = mo(pk) && mo(pk).v[c.id] != null ? mo(pk).v[c.id] : null, kc = KINDS[c.kind].col;
+    return `<div class="mt"><label style="display:block"><span class="dot" style="background:${kc}"></span>${esc(c.icon)} ${esc(c.name)} (${esc(cur())})<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.v[c.id])}" placeholder="0.00" oninput="ME.v['${c.id}']=this.value;meUpdate()"></label>
+     <div class="mu sm">${t > 0 ? `Target ${M(t)}` : 'No target'}${pv != null ? ` · last month ${M(pv, 2)}` : ''}</div>
+     ${c.role ? `<label style="display:block;margin-top:6px">${esc(c.name)} balance at month end (optional)<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.b[c.id] || '')}" placeholder="Pot or account total" oninput="ME.b['${c.id}']=this.value"></label>` : ''}</div>`; };
+  return coachStrip() + `<div class="card"><div class="row sb"><h2 style="margin:0">${exists ? 'Edit month' : 'New month'}</h2><button class="chip" onclick="ME=null;SERR='';render()">Cancel</button></div>
+   <label class="mt" style="display:block">Month<input type="month" value="${k}" max="${curMonth()}" onchange="meOpen(this.value)"></label>
+   <div class="row mt"><label>Starting balance (${esc(cur())})<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.sb)}" placeholder="${prevEb != null ? prevEb : ''}" oninput="ME.sb=this.value;meUpdate()"></label><label>Total money in (${esc(cur())})<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.in)}" placeholder="0.00" oninput="ME.in=this.value;meUpdate()"></label></div>
+   ${mo(pk) ? '<div class="row mt"><button class="chip" onclick="meCopy()">Start from last month\'s figures</button></div>' : ''}</div>
+  <div class="card"><h3>Money out</h3><div class="mu sm">The same list as your Monzo breakdown. Leave a category blank if it was nothing. If your pot transfers also sit inside Ignore/Transfers, take them out of there so they aren't counted twice.</div>${S.cats.map(field).join('')}</div>
+  <div class="card"><h3>Check</h3><div class="row mt"><label>Ending balance (optional)<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.eb)}" placeholder="Today's balance" oninput="ME.eb=this.value;meUpdate()"></label><label>Monzo's "Total money out" (optional)<input type="number" step="0.01" inputmode="decimal" value="${esc(ME.chk)}" placeholder="to check" oninput="ME.chk=this.value;meUpdate()"></label></div>
+   <label class="mt" style="display:block">Note (optional)<input value="${esc(ME.note)}" maxlength="120" placeholder="Holiday month, car repair..." oninput="ME.note=this.value"></label>
+   <div class="mt" id="metot">${meTotals()}</div>
+   ${SERR ? `<div class="bad mt" role="alert">${esc(SERR)}</div>` : ''}<div class="row mt"><button class="btn" onclick="meSave()">Save month</button><button class="btn g" onclick="ME=null;SERR='';render()">Cancel</button></div></div>`;
+}
+
+/* ---------- MATRIX: every category, every month ---------- */
+function shade(k, c, rowAvg) {
+  if (c.kind === 'ignore') return 's0'; const v = val(k, c.id), t = tgOf(k, c);
+  if (t > 0) { const r = v / t; if (c.kind === 'save') return r >= 1 ? 's1' : r >= 0.8 ? 's3' : 's4'; return r <= 0.9 ? 's1' : r <= (c.kind === 'need' ? 1.05 : 1) ? 's2' : r <= 1.15 ? 's3' : 's4'; }
+  if (!rowAvg || !v) return 's0'; const r = v / rowAvg; return c.kind === 'save' ? (r >= 1.15 ? 's1' : r <= 0.85 ? 's3' : 's0') : (r <= 0.85 ? 's1' : r >= 1.15 ? 's3' : 's0');
+}
+function vMatrix() {
+  const ks = monthsRange(MR), all = MK(); if (!all.length) return coachStrip() + '<div class="card"><h2>Matrix</h2><div class="mu mt">Add a month first.</div></div>';
+  const sel = catById(MC) && MC ? catById(MC) : S.cats.find(c => c.kind !== 'ignore'), tots = [['in', 'Money in'], ['spend', 'Spent'], ['saved', 'Saved'], ['left', 'Left over']];
+  return coachStrip() + `<div class="card"><div class="row sb"><h2 style="margin:0">Matrix</h2><div class="row" style="gap:4px">${[[6, '6M'], [12, '12M'], [0, 'All']].map(o => `<button class="chip ${MR === o[0] ? 'on' : ''}" onclick="MR=${o[0]};render()">${o[1]}</button>`).join('')}</div></div>
+   <div class="mu sm">Every category by month. Green is on or under target, amber is close, orange is over. Without a target, colour shows the month against that row's average.</div>
+   <div class="mx"><table class="mxt"><tr><th></th>${ks.map(k => `<th>${mLab(k)}</th>`).join('')}<th>Avg</th></tr>
+   ${S.cats.map(c => { const vs = ks.map(k => val(k, c.id)), a = mean(vs); return `<tr><td><button class="lnk" onclick="MC='${c.id}';render()">${esc(c.icon)} ${esc(c.name)}</button></td>${ks.map((k, i) => `<td class="${shade(k, c, a)}">${vs[i] ? nfi(vs[i]) : '–'}</td>`).join('')}<td><b>${a ? nfi(a) : '–'}</b></td></tr>`; }).join('')}
+   ${tots.map(([m, n]) => { const f = METRICS[m].f, vs = ks.map(f); return `<tr class="tot"><td>${n}</td>${vs.map(v => `<td>${nfi(v)}</td>`).join('')}<td><b>${nfi(mean(vs))}</b></td></tr>`; }).join('')}
+   <tr class="tot"><td>Saved %</td>${ks.map(k => `<td>${rateOf(k) != null ? pc(rateOf(k)) + '%' : '–'}</td>`).join('')}<td><b>${(() => { const v = ks.map(rateOf).filter(x => x != null); return v.length ? pc(mean(v)) + '%' : '–'; })()}</b></td></tr>
+   <tr class="tot"><td>On target</td>${ks.map(k => { const s = scoreOf(k); return `<td>${s.n ? s.ok + '/' + s.n : '–'}</td>`; }).join('')}<td></td></tr></table></div></div>
+   ${sel ? vCatDetail(sel) : ''}`;
+}
+const nfi = n => Math.round(+n || 0).toLocaleString('en-GB');
+function vCatDetail(c) {
+  const ks = monthsRange(Math.max(MR, 12) || 0), all = MK(), vals = ks.map(k => val(k, c.id)), t = tgOf(latestK(), c), a3 = mean(all.slice(-3).map(k => val(k, c.id))), a6 = mean(all.slice(-6).map(k => val(k, c.id))), a12 = mean(all.slice(-12).map(k => val(k, c.id))), aAll = mean(all.map(k => val(k, c.id)));
+  const mx = all.reduce((m, k) => val(k, c.id) > val(m, c.id) ? k : m, all[0]), mn = all.reduce((m, k) => val(k, c.id) < val(m, c.id) ? k : m, all[0]), sl = slope(all.slice(-6).map(k => val(k, c.id))), sp = c.kind === 'ignore' || c.kind === 'save' ? null : val(latestK(), c.id) / (spendOf(latestK()) || 1);
+  const st = streakOf(k => !!mo(k) && okOf(k, c) === true), tot = all.filter(k => okOf(k, c) != null).length, okN = all.filter(k => okOf(k, c) === true).length;
+  return `<div class="card"><h3>${esc(c.icon)} ${esc(c.name)}</h3><div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">${S.cats.map(x => chip(`MC='${x.id}';render()`, x.name, x.id === c.id, colorOf(x.id))).join('')}</div>
+   ${chart({ label: c.name + ' by month', span: Math.max(1, ks.length - 1), zero: true, layers: [{ type: 'bars', c: colorOf(c.id), pts: ks.map((k, i) => ({ x: i, y: vals[i] })) }].concat(t > 0 ? [{ type: 'h', y: t, c: '#4C7A46', t: 'target ' + M(t) }] : []).concat(a12 ? [{ type: 'h', y: a12, c: 'var(--mu)', t: '12-mo avg', below: true }] : []), xl: mAxis(ks) })}
+   <div class="tiles"><div class="tile"><b>${M(val(latestK(), c.id))}</b><span>Latest, ${mLab(latestK())}</span></div><div class="tile"><b>${M(a3)}</b><span>3-month average</span></div><div class="tile"><b>${M(a12)}</b><span>12-month average</span></div>
+   <div class="tile"><b>${M(aAll)}</b><span>All-time average</span></div><div class="tile"><b>${M(val(mx, c.id))}</b><span>Highest, ${mLab(mx)}</span></div><div class="tile"><b>${M(val(mn, c.id))}</b><span>Lowest, ${mLab(mn)}</span></div>
+   <div class="tile"><b>${sl != null ? dlt(sl, c.kind === 'save' ? 1 : -1) : '–'}</b><span>Trend a month (last 6)</span></div><div class="tile"><b>${sp != null ? pc(sp) + '%' : '–'}</b><span>Share of spending</span></div><div class="tile"><b>${tot ? okN + '/' + tot : '–'}</b><span>Months on target${st.cur ? ' · ' + st.cur + ' in a row' : ''}</span></div></div>
+   <table class="tbl"><tr><th>Month</th><th>Amount</th><th>Target</th><th>vs last</th></tr>${all.slice().reverse().slice(0, 12).map(k => { const p = addM(k, -1); return `<tr><td>${mLab(k)}</td><td><b>${M(val(k, c.id))}</b></td><td>${tgOf(k, c) > 0 ? M(tgOf(k, c)) : '–'}</td><td>${mo(p) ? dlt(val(k, c.id) - val(p, c.id), c.kind === 'save' ? 1 : -1) : '–'}</td></tr>`; }).join('')}</table></div>`;
+}
+
+/* ---------- CHARTS ---------- */
+function explorerSeries() {
+  const s = [{ k: 'in', n: 'Money in', u: 'gbp', c: '#4C7A46', f: inOf }, { k: 'spend', n: 'Spending', u: 'gbp', c: '#D9622B', f: spendOf }, { k: 'saved', n: 'Saved', u: 'gbp', c: '#3E7CB1', f: savedOf }, { k: 'left', n: 'Left over', u: 'gbp', c: '#8E6BBF', f: leftOf },
+    { k: 'out', n: 'Money out (all)', u: 'gbp', c: '#B4690E', f: outOf }, { k: 'rate', n: 'Saved %', u: 'pct', c: '#2A9D8F', f: k => rateOf(k) == null ? null : rateOf(k) * 100 }, { k: 'bal', n: 'Ending balance', u: 'gbp', c: '#5B7FA6', f: balanceOf }];
+  S.cats.forEach(c => s.push({ k: 'c:' + c.id, n: c.name, u: 'gbp', c: colorOf(c.id), f: k => val(k, c.id), cat: true }));
+  return s;
+}
+function vCharts() {
+  const all = MK(); if (!all.length) return coachStrip() + '<div class="card"><h2>Charts</h2><div class="mu mt">Add a month first.</div></div>';
+  const ks = monthsRange(CR), n = ks.length, sp = Math.max(1, n - 1), need2 = '<div class="mu mt">Needs two or more months.</div>', lines = (list) => list.filter(l => l.pts.filter(Boolean).length >= 2);
+  const stackCats = spendCats().concat(CI ? kinds(['ignore']) : []), ser = explorerSeries(), sel = ser.filter(x => CSEL.includes(x.k)), mixed = new Set(sel.map(x => x.u)).size > 1;
+  const A = CA && mo(CA) ? CA : latestK(), B = CB && mo(CB) ? CB : (mo(addM(A, -1)) ? addM(A, -1) : all[Math.max(0, all.indexOf(A) - 1)]);
+  const lk = latestK(), shareRows = spendCats().map(c => ({ c, now: val(lk, c.id), avg: mean(all.slice(-12).map(k => val(k, c.id))) })).filter(r => r.now > 0 || r.avg > 0).sort((a, b) => b.now - a.now), totNow = spendOf(lk) || 1, totAvg = mean(all.slice(-12).map(spendOf)) || 1;
+  const years = [...new Set(all.map(k => k.slice(0, 4)))].sort().reverse(), cy = years[0], cyKs = all.filter(k => k.startsWith(cy)), lyKs = cyKs.map(k => addM(k, -12)).filter(mo);
+  const yr = y => { const kk = all.filter(k => k.startsWith(y)); return { y, n: kk.length, in: kk.reduce((s, k) => s + inOf(k), 0), sp: kk.reduce((s, k) => s + spendOf(k), 0), sv: kk.reduce((s, k) => s + savedOf(k), 0) }; };
+  return coachStrip() + `
+  <div class="card"><div class="row sb"><h2 style="margin:0">Charts</h2><div class="row" style="gap:4px">${[[6, '6M'], [12, '12M'], [24, '2Y'], [0, 'All']].map(o => `<button class="chip ${CR === o[0] ? 'on' : ''}" onclick="CR=${o[0]};render()">${o[1]}</button>`).join('')}</div></div>
+   <h3 class="mt">Spending by category</h3>${chart({ label: 'Spending by category', span: sp, zero: true, layers: [{ type: 'stack', pts: ks.map((k, i) => ({ x: i, y: stackCats.reduce((s, c) => s + val(k, c.id), 0), parts: stackCats.map(c => ({ y: val(k, c.id), c: colorOf(c.id) })) })) }], xl: mAxis(ks) })}
+   ${legend(stackCats.map(c => ({ c: colorOf(c.id), n: c.name })))}<div class="row mt">${chip('CI=!CI;render()', 'Include transfers and pending', CI, '')}</div></div>
+  <div class="card"><h3>In, spent, saved</h3>${n < 2 ? need2 : chart({ label: 'Money in, spent, saved', span: sp, zero: true, layers: lines([{ type: 'line', c: '#4C7A46', w: 3, dots: true, pts: ks.map((k, i) => ({ x: i, y: inOf(k) })) }, { type: 'line', c: '#D9622B', w: 3, dots: true, pts: ks.map((k, i) => ({ x: i, y: spendOf(k) })) }, { type: 'line', c: '#3E7CB1', w: 3, dots: true, pts: ks.map((k, i) => ({ x: i, y: savedOf(k) })) }]), xl: mAxis(ks) }) + legend([{ c: '#4C7A46', n: 'Money in' }, { c: '#D9622B', n: 'Spent' }, { c: '#3E7CB1', n: 'Saved' }])}</div>
+  <div class="card"><h3>Saved as a share of money in</h3>${n < 2 ? need2 : chart({ label: 'Savings rate', span: sp, zero: true, yfmt: v => Math.round(v) + '%', layers: [{ type: 'h', y: S.cfg.saveRate, c: '#4C7A46', t: 'target ' + S.cfg.saveRate + '%' }, { type: 'bars', c: '#2A9D8F', pts: ks.map((k, i) => rateOf(k) == null ? null : { x: i, y: rateOf(k) * 100, c: rateOf(k) * 100 >= S.cfg.saveRate ? '#4C7A46' : '#2A9D8F' }) }], xl: mAxis(ks) })}<div class="tiles t3"><div class="tile"><b>${(() => { const v = ks.map(rateOf).filter(x => x != null); return v.length ? pc(mean(v)) + '%' : '–'; })()}</b><span>Average, this range</span></div><div class="tile"><b>${ks.filter(k => rateOf(k) != null && rateOf(k) * 100 >= S.cfg.saveRate).length}/${n}</b><span>Months at ${S.cfg.saveRate}%+</span></div><div class="tile"><b>${M(ks.reduce((s, k) => s + savedOf(k), 0))}</b><span>Saved in total</span></div></div></div>
+  <div class="card"><h3>Pick your own lines</h3><div class="row mt" style="gap:6px">${ser.map(x => chip(`cser('${x.k}')`, x.n, CSEL.includes(x.k), x.c)).join('')}</div>
+   ${sel.length ? (n < 2 ? need2 : chart({ label: 'Explorer', span: sp, layers: sel.map(x => ({ type: 'line', u: x.u, c: x.c, w: 2.8, dots: true, pts: ks.map((k, i) => { const y = x.f(k); return y == null || !mo(k) ? null : { x: i, y }; }) })), xl: mAxis(ks), yfmt: v => M(v) }) + legend(sel.map(x => ({ c: x.c, n: x.n, v: (() => { const y = x.f(ks[n - 1]); return y == null ? '' : x.u === 'pct' ? Math.round(y) + '%' : M(y); })() }))) + `<div class="mu sm">${mixed ? 'Pounds and percentages together, so each line is scaled to its own range: compare shapes, not heights. ' : ''}The key shows the latest month.</div>`) : '<div class="mu mt">Pick at least one line.</div>'}</div>
+  <div class="card"><h3>Month against month</h3><div class="row mt"><label>A<select onchange="CA=this.value;render()">${all.slice().reverse().map(k => `<option value="${k}" ${k === A ? 'selected' : ''}>${mLab(k, true)}</option>`).join('')}</select></label><label>B<select onchange="CB=this.value;render()">${all.slice().reverse().map(k => `<option value="${k}" ${k === B ? 'selected' : ''}>${mLab(k, true)}</option>`).join('')}</select></label></div>
+   <table class="tbl"><tr><th></th><th>${mLab(A)}</th><th>${mLab(B)}</th><th>A − B</th></tr>${S.cats.map(c => `<tr><td>${esc(c.icon)} ${esc(c.name)}</td><td>${M(val(A, c.id))}</td><td>${M(val(B, c.id))}</td><td>${dlt(val(A, c.id) - val(B, c.id), c.kind === 'save' ? 1 : -1)}</td></tr>`).join('')}
+   ${['in', 'spend', 'saved', 'left'].map(m => `<tr class="tot"><td>${METRICS[m].n}</td><td>${M(METRICS[m].f(A))}</td><td>${M(METRICS[m].f(B))}</td><td>${dlt(METRICS[m].f(A) - METRICS[m].f(B), METRICS[m].good)}</td></tr>`).join('')}</table></div>
+  <div class="card"><h3>Where the money goes</h3><div class="mu sm">Share of spending: ${mLab(lk)} against your 12-month average.</div>${shareRows.map(r => `<div class="mt"><div class="gl"><span>${esc(r.c.icon)} ${esc(r.c.name)}</span><span><b>${pc(r.now / totNow)}%</b> <span class="mu sm">vs ${pc(r.avg / totAvg)}% usually</span></span></div><div class="bar"><i style="width:${Math.min(100, r.now / totNow * 100)}%;background:${colorOf(r.c.id)}"></i></div></div>`).join('')}</div>
+  <div class="card"><h3>Year by year</h3><table class="tbl"><tr><th>Year</th><th>In</th><th>Spent</th><th>Saved</th><th>Rate</th></tr>${years.map(y => { const r = yr(y); return `<tr><td>${y}<div class="mu sm">${plural(r.n, 'month')}</div></td><td>${M(r.in)}</td><td>${M(r.sp)}</td><td>${M(r.sv)}</td><td>${r.in > 0 ? pc(r.sv / r.in) + '%' : '–'}</td></tr>`; }).join('')}</table>
+   ${lyKs.length ? `<div class="note">${cy} so far (${plural(cyKs.length, 'month')}) against the same months of ${+cy - 1}: spending ${dlt(cyKs.reduce((s, k) => s + spendOf(k), 0) - lyKs.reduce((s, k) => s + spendOf(k), 0), -1)}, saved ${dlt(cyKs.reduce((s, k) => s + savedOf(k), 0) - lyKs.reduce((s, k) => s + savedOf(k), 0), 1)}.</div>` : ''}</div>`;
+}
+const cser = k => { CSEL = CSEL.includes(k) ? CSEL.filter(x => x !== k) : CSEL.concat([k]); render(); };
+
+/* ---------- STREAKS ---------- */
+function milestones() {
+  const out = [], hit = streakOf(habits()[0].f), sv = streakOf(h => !!mo(h) && savedOf(h) > 0), rt = streakOf(habits().find(h => h.k === 'rate').f), ef = potState('ef'), inv = potState('inv'), efT = efTarget().target;
+  [2, 3, 6, 12].forEach(n => out.push({ i: '🎯', t: `${n} months on target in a row`, ok: hit.best >= n }));
+  [3, 6, 12, 24].forEach(n => out.push({ i: '💰', t: `Put something away ${n} months in a row`, ok: sv.best >= n }));
+  [3, 6].forEach(n => out.push({ i: '📊', t: `${n} months saving ${S.cfg.saveRate}%+`, ok: rt.best >= n }));
+  if (ef) { [500, 1000, 2500, 5000, 10000].forEach(n => out.push({ i: '🛟', t: `${M(n)} in the emergency fund`, ok: ef.bal >= n })); if (efT > 0) out.push({ i: '🛡️', t: `Emergency fund target reached (${M(efT)})`, ok: ef.bal >= efT }); }
+  if (inv) [1000, 5000, 10000, 25000, 50000, 100000].forEach(n => out.push({ i: '📈', t: `${M(n)} invested`, ok: inv.bal >= n }));
+  return out;
+}
+function vStreaks() {
+  const all = MK(); if (!all.length) return coachStrip() + '<div class="card"><h2>Streaks</h2><div class="mu mt">Add a month first.</div></div>';
+  const hs = habits(), last = latestK(), L = 12;
+  const strip = f => { let s = ''; for (let i = L - 1; i >= 0; i--) { const k = addM(last, -i), on = !!mo(k) && f(k); s += `<i class="sq ${on ? 'on' : mo(k) ? '' : 'no'}" title="${mLab(k)}"></i>`; } return `<div class="strip">${s}</div><div class="mu sm" style="display:flex;justify-content:space-between"><span>${mLab(addM(last, -(L - 1)))}</span><span>${mLab(last)}</span></div>`; };
+  const ms = milestones(), got = ms.filter(m => m.ok).length, sorted = hs.map(h => ({ h, s: streakOf(h.f) }));
+  return coachStrip() + `<div class="card"><h2>Streaks</h2><div class="mu">Consecutive months, counted back from ${mLab(last, true)}. A month you didn't fill in breaks a streak.</div>
+   <div class="tiles t2"><div class="tile"><b>${sorted[0].s.cur} 🎯</b><span>Months on target in a row (best ${sorted[0].s.best})</span></div><div class="tile"><b>${sorted.find(x => x.h.k === 'saved').s.cur} 💰</b><span>Months putting money away (best ${sorted.find(x => x.h.k === 'saved').s.best})</span></div></div></div>
+   ${sorted.map(({ h, s }) => `<div class="card" style="margin-top:10px"><div class="row sb"><b>${esc(h.i)} ${esc(h.n)}</b><span class="big" style="font-size:24px">${s.cur}<span class="mu sm" style="font-weight:600"> in a row</span></span></div><div class="mu sm">Best ${s.best} · ${s.total} of ${s.n} months${s.n ? ' (' + pc(s.total / s.n) + '%)' : ''}</div>${strip(h.f)}</div>`).join('')}
+   <div class="card"><div class="row sb"><h3>Milestones</h3><b>${got}/${ms.length}</b></div>${ms.map(m => `<div class="meal"><span class="${m.ok ? '' : 'mu'}">${m.ok ? m.i : '○'} ${esc(m.t)}</span><b class="${m.ok ? 'good' : 'mu'}">${m.ok ? 'done' : ''}</b></div>`).join('')}</div>`;
+}
+
+/* ---------- SAVINGS: emergency fund + investments ---------- */
+function potSeries(c) { const ks = MK(); let bal = 0; return ks.map(k => { const m = mo(k); bal += val(k, c.id); if (m.b[c.id] != null) bal = m.b[c.id]; return bal; }); }
+function wiCalc() {
+  const inv = potState('inv'), ef = potState('ef'), el = $('#wi-inv'), ee = $('#wi-ef'), r = S.cfg.invRate, last = latestK();
+  if (el && inv) { const c = WI.inv !== '' ? Math.max(0, +WI.inv || 0) : inv.avg, g = S.cfg.invGoal, t = monthsTo(inv.bal, g, c, r);
+    el.innerHTML = `<div class="mu sm">At ${M(c)} a month and ${r}% a year growth:</div><div class="tiles t3">${[5, 10, 20].map(y => `<div class="tile"><b>${M(inv.bal * Math.pow(1 + r / 1200, y * 12) + fvMonthly(c, r, y))}</b><span>in ${y} years</span></div>`).join('')}</div>
+     <div class="note">${t.done ? `You have already passed ${M(g)}. 🎉` : t.never ? `At that rate you don't reach ${M(g)}. Try a higher monthly amount.` : `${M(g)} in about <b>${t.years < 1 ? Math.ceil(t.months) + ' months' : t.years.toFixed(1) + ' years'}</b> (${mLab(addM(last, Math.ceil(t.months)), true)}). Growth is an assumption, not a promise.`}</div>`; }
+  if (ee && ef) { const c = WI.ef !== '' ? Math.max(0, +WI.ef || 0) : ef.avg, T = efTarget().target, t = monthsTo(ef.bal, T, c, 0);
+    ee.innerHTML = T <= 0 ? '' : `<div class="note">${t.done ? 'Target reached. 🎉' : t.never ? 'Add a monthly amount to see a date.' : `At ${M(c)} a month you reach ${M(T)} in about <b>${Math.ceil(t.months)} months</b> (${mLab(addM(last, Math.ceil(t.months)), true)}).`}</div>`; }
+}
+function vSave() {
+  const all = MK(); if (!all.length) return coachStrip() + '<div class="card"><h2>Savings</h2><div class="mu mt">Add a month first.</div></div>';
+  const ef = potState('ef'), inv = potState('inv'), efT = efTarget(), last = latestK(), eb = balanceOf(last);
+  const growth = (() => { const c = role('inv'); if (!c) return null; const r = []; all.forEach((k, i) => { const m = mo(k), p = i ? mo(all[i - 1]) : null; if (p && m.b[c.id] != null && p.b[c.id] != null && p.b[c.id] > 0) r.push((m.b[c.id] - p.b[c.id] - val(k, c.id)) / p.b[c.id]); }); return r.length >= 2 ? { m: mean(r), n: r.length } : null; })();
+  const ser = c => ({ type: 'line', c: colorOf(c.id), w: 3, pts: potSeries(c).map((y, i) => ({ x: i, y })) });
+  setTimeout(wiCalc, 0);
+  return coachStrip() + `
+  <div class="card"><h2>Savings</h2><div class="tiles t3"><div class="tile"><b>${M((ef ? ef.bal : 0) + (inv ? inv.bal : 0))}</b><span>Emergency fund + investments</span></div><div class="tile"><b>${eb != null ? M(eb) : '–'}</b><span>Balance, ${mLab(last)}</span></div><div class="tile"><b>${M(all.reduce((s, k) => s + savedOf(k), 0))}</b><span>Put away, all months</span></div></div>
+   ${all.length >= 2 ? chart({ label: 'Savings balances', span: all.length - 1, zero: true, layers: [role('ef') ? ser(role('ef')) : null, role('inv') ? ser(role('inv')) : null].filter(Boolean), xl: mAxis(all) }) + legend([role('ef') ? { c: colorOf(role('ef').id), n: 'Emergency fund' } : null, role('inv') ? { c: colorOf(role('inv').id), n: 'Investments' } : null].filter(Boolean)) : ''}</div>
+  ${ef ? `<div class="card"><h3>🛟 Emergency fund</h3><div class="big mt">${M(ef.bal)}</div>${efT.target > 0 ? `${bar(ef.bal / efT.target, ef.bal >= efT.target ? 'ok' : '')}<div class="mu sm">${pc(clamp(ef.bal / efT.target, 0, 1))}% of ${M(efT.target)} (${esc(efT.how)})</div>` : '<div class="mu sm mt">Set a target in Settings, or it uses a few months of your needs once you have some data.</div>'}
+   <div class="tiles t3"><div class="tile"><b>${M(ef.avg)}</b><span>Average put in, last 6 months</span></div><div class="tile"><b>${M(val(last, ef.c.id))}</b><span>Put in, ${mLab(last)}</span></div><div class="tile"><b>${(() => { const n = S.cfg.efMonths, per = efT.target / (S.cfg.efMonths || 1); return per > 0 ? (ef.bal / per).toFixed(1) : '–'; })()}</b><span>Months of needs covered</span></div></div>
+   <label class="mt" style="display:block">What if I put in (${esc(cur())} a month)?<input type="number" inputmode="decimal" value="${esc(WI.ef)}" placeholder="${Math.round(ef.avg)}" oninput="WI.ef=this.value;wiCalc()"></label><div id="wi-ef"></div></div>` : ''}
+  ${inv ? `<div class="card"><h3>📈 Investments</h3><div class="big mt">${M(inv.bal)}</div><div class="tiles t3"><div class="tile"><b>${M(inv.avg)}</b><span>Average put in, last 6 months</span></div><div class="tile"><b>${M(inv.total)}</b><span>Put in, all months</span></div><div class="tile"><b>${growth ? (Math.pow(1 + growth.m, 12) * 100 - 100).toFixed(1) + '%' : '–'}</b><span>${growth ? 'Return a year from your balances (' + growth.n + ' mo)' : 'Add month-end balances to see your real return'}</span></div></div>
+   <div class="mu sm mt">Goal ${M(S.cfg.invGoal)} · assumed growth ${S.cfg.invRate}% a year (change both in Settings).</div>
+   <label class="mt" style="display:block">What if I invest (${esc(cur())} a month)?<input type="number" inputmode="decimal" value="${esc(WI.inv)}" placeholder="${Math.round(inv.avg)}" oninput="WI.inv=this.value;wiCalc()"></label><div id="wi-inv"></div></div>` : ''}
+  <div class="card"><div class="mu sm">Projections are arithmetic on your own figures and an assumed growth rate. Investments can fall as well as rise, and past returns don't predict future ones. This isn't financial advice.</div></div>`;
+}
+
+/* ---------- SETTINGS ---------- */
+function vSettings() {
+  let theme = 'auto'; try { theme = localStorage.getItem('mm_theme') || 'auto'; } catch (e) { }
+  const f = (id, l, v, ex) => `<label>${l}<input id="${id}" value="${esc(v == null ? '' : v)}" ${ex || 'type="number" step="0.01" inputmode="decimal"'}></label>`, c = S.cfg, last = latestK(), sug = suggestTargets();
+  return coachStrip() + `<div class="card"><h2>Settings</h2>
+   <div class="row mt">${f('s-name', 'Name', c.name, 'maxlength="24"')}${f('s-cur', 'Currency', c.cur, 'maxlength="3" style="max-width:80px"')}</div>
+   <div class="row mt">${f('s-rate', 'Saving target (% of money in)', c.saveRate, 'type="number" inputmode="decimal"')}${f('s-efm', 'Emergency fund: months of needs', c.efMonths, 'type="number" inputmode="decimal"')}</div>
+   <div class="row mt">${f('s-efg', 'Or a fixed fund target', c.efGoal || '', 'type="number" inputmode="decimal" placeholder="auto"')}${f('s-ir', 'Investment growth (% a year)', c.invRate, 'type="number" inputmode="decimal"')}</div>
+   <div class="row mt">${f('s-ig', 'Investment goal', c.invGoal, 'type="number" inputmode="decimal"')}</div>
+   ${SERR ? `<div class="bad mt" role="alert">${esc(SERR)}</div>` : ''}<div class="row mt"><button class="btn" onclick="saveCfg()">Save</button></div></div>
+  <div class="card"><h3>Categories and targets</h3><div class="mu sm">A target is a monthly amount: stay under it for spending, reach it for saving. Months keep the targets that applied when you entered them, so changing one doesn't rewrite history.</div>
+   <label class="mt" style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink)"><input type="checkbox" style="width:auto" ${TAPPLY ? 'checked' : ''} onchange="TAPPLY=this.checked"> Also apply target changes to ${last ? mLab(last, true) : 'the latest month'}</label>
+   ${Object.keys(sug).length ? `<div class="row mt"><button class="btn g" onclick="applySuggest()">Suggest targets from my last months</button></div><div class="mu sm">Fills blank targets from your own average (wants and avoidable trimmed by 5%).</div>` : ''}
+   ${MK().length ? `<div class="row mt"><button class="btn g" onclick="applyAllTargets()">${RST === 'tg' ? 'Tap again to rewrite past months' : 'Use these targets for every past month'}</button></div><div class="mu sm">Handy if you added months before setting targets. It re-scores your whole history against today's targets.</div>` : ''}
+   ${S.cats.map((x, i) => `<div class="card" style="box-shadow:none;margin-top:10px"><div class="row"><label style="flex:0 0 60px">Icon<input value="${esc(x.icon)}" maxlength="4" oninput="catSet(${i},'icon',this.value)" style="text-align:center"></label><label style="flex:2 1 120px">Name<input value="${esc(x.name)}" maxlength="30" oninput="catSet(${i},'name',this.value)"></label></div>
+     <div class="row mt"><label>Type<select onchange="catSet(${i},'kind',this.value);render()" ${x.role ? 'disabled' : ''}>${KIND_ORDER.map(k => `<option value="${k}" ${x.kind === k ? 'selected' : ''}>${KINDS[k].name}</option>`).join('')}</select></label><label>Monthly target<input type="number" inputmode="decimal" value="${x.tgt || ''}" placeholder="none" oninput="tgtSet(${i},this.value)"></label></div>
+     <div class="mu sm mt">${esc(KINDS[x.kind].blurb)}${x.role ? ' · tracks a balance for projections' : ''}</div>
+     <div class="row mt"><button class="chip" onclick="catMove(${i},-1)" aria-label="Move up">↑</button><button class="chip" onclick="catMove(${i},1)" aria-label="Move down">↓</button>${x.role ? '' : `<button class="chip" onclick="catDel(${i})">${CE === x.id ? 'Tap again to delete' : 'Delete'}</button>`}</div></div>`).join('')}
+   <div class="row mt"><button class="btn g" onclick="catAdd()">+ Add a category</button></div></div>
+  ${dataCard()}
+  <div class="card"><h3>Appearance</h3><div class="row mt">${['auto', 'light', 'dark'].map(t => chip(`setTheme('${t}')`, t[0].toUpperCase() + t.slice(1), theme === t, '')).join('')}</div></div>
+  <details class="card" ${DT ? 'open' : ''} ontoggle="DT=this.open"><summary>Developer tools</summary><div class="mu mt">For testing. Ordinary use never needs these.</div>
+   <div class="row mt"><button class="btn g" onclick="loadDemo()">${RST === 'demo' ? 'Tap again to replace my data' : 'Load sample data'}</button><button class="btn g" onclick="resetAll()">${RST === 'reset' ? 'Tap again to delete everything' : 'Reset all'}</button></div></details>`;
+}
+
+/* ---------- ACTIONS ---------- */
+const say = m => { MSG = m; };
+function go(v) { V = v; SERR = ''; IMPQ = null; IMPERR = ''; CSVT = ''; DNOTE = ''; RST = 0; DELM = ''; CE = null; if (v !== 'months') ME = null; render(); scrollTo(0, 0); }
+const selM = k => { SEL = k; render(); };
+function meOpen(k) {
+  if (!/^\d{4}-\d{2}$/.test(k || '') || k > curMonth()) return; const m = mo(k), o = { k, sb: m && m.sb != null ? m.sb : '', in: m ? m.in || '' : '', eb: m && m.eb != null ? m.eb : '', chk: '', note: m ? m.note : '', v: {}, b: {} };
+  S.cats.forEach(c => { o.v[c.id] = m && m.v[c.id] != null ? m.v[c.id] : ''; if (c.role) o.b[c.id] = m && m.b[c.id] != null ? m.b[c.id] : ''; }); ME = o; V = 'months'; SERR = ''; render(); scrollTo(0, 0);
+}
+function meNew() { let k = MK().length ? addM(latestK(), 1) : addM(curMonth(), -1); if (k > curMonth()) k = curMonth(); meOpen(k); }
+const meEdit = k => meOpen(k);
+function meCopy() { const p = mo(addM(ME.k, -1)); if (!p) return; S.cats.forEach(c => { if (p.v[c.id] != null) ME.v[c.id] = p.v[c.id]; }); if (!ME.in) ME.in = p.in || ''; render(); }
+function meSave() {
+  const n = x => x === '' || x == null ? null : parseFloat(x), k = ME.k, nums = [ME.in, ...Object.values(ME.v)].map(n);
+  if (nums.some(x => x != null && (!isFinite(x) || x < 0))) { SERR = 'Amounts can\'t be negative. Enter money out as a positive number.'; return render(); }
+  if (!nums.some(x => x != null && x > 0)) { SERR = 'Add money in, or at least one category.'; return render(); }
+  const old = mo(k), pk = addM(k, -1), pEb = mo(pk) && mo(pk).eb != null ? mo(pk).eb : null, m = { sb: n(ME.sb) != null ? r2(n(ME.sb)) : (pEb != null ? pEb : null), in: r2(n(ME.in) || 0), eb: n(ME.eb) != null ? r2(n(ME.eb)) : null, v: {}, tg: {}, b: {}, note: ME.note.trim().slice(0, 120) };
+  S.cats.forEach(c => { if (n(ME.v[c.id]) != null) m.v[c.id] = r2(n(ME.v[c.id])); if (ME.b[c.id] !== '' && ME.b[c.id] != null && n(ME.b[c.id]) != null) m.b[c.id] = r2(n(ME.b[c.id])); m.tg[c.id] = old && old.tg[c.id] != null ? old.tg[c.id] : c.tgt; });
+  S.months[k] = m; ME = null; SEL = k; V = 'home'; SERR = ''; save();
+  const sc = scoreOf(k), p = mo(pk); say(sc.n ? `${mLab(k, true)} saved. ${sc.ok} of ${sc.n} targets met${sc.hit ? ', so that is a hit.' : '.'}` : `${mLab(k, true)} saved.`); render(); scrollTo(0, 0);
+}
+function delMonth(k) { if (DELM !== k) { DELM = k; return render(); } DELM = ''; delete S.months[k]; if (SEL === k) SEL = null; save(); say('Month deleted.'); render(); }
+function saveCfg() {
+  const g = i => $('#' + i).value, n = i => parseFloat(g(i)), c = S.cfg;
+  c.name = g('s-name').trim().slice(0, 24); c.cur = g('s-cur').trim().slice(0, 3) || '£'; c.saveRate = clamp(n('s-rate') || 20, 0, 90); c.efMonths = clamp(n('s-efm') || 3, 0.5, 24); c.efGoal = n('s-efg') > 0 ? n('s-efg') : 0; c.invRate = clamp(isFinite(n('s-ir')) ? n('s-ir') : 7, 0, 30); c.invGoal = n('s-ig') > 0 ? n('s-ig') : 1000000;
+  SERR = ''; save(); say('Saved.'); render();
+}
+function catSet(i, f, v) { const c = S.cats[i]; if (f === 'kind') { if (!KINDS[v]) return; c.kind = v; } else c[f] = f === 'name' ? v.slice(0, 30) : v.slice(0, 4); save(); }
+function tgtSet(i, v) { const c = S.cats[i], t = Math.max(0, parseFloat(v) || 0); c.tgt = t; if (TAPPLY && latestK()) mo(latestK()).tg[c.id] = t; save(); }
+function catAdd() { S.cats.push({ id: uid(), name: 'New category', kind: 'want', icon: '•', tgt: 0 }); save(); render(); }
+function catMove(i, d) { const j = i + d; if (j < 0 || j >= S.cats.length) return; [S.cats[i], S.cats[j]] = [S.cats[j], S.cats[i]]; save(); render(); }
+function catDel(i) { const c = S.cats[i]; if (CE !== c.id) { CE = c.id; return render(); } CE = null; S.cats.splice(i, 1); Object.values(S.months).forEach(m => { delete m.v[c.id]; delete m.tg[c.id]; delete m.b[c.id]; }); if (MC === c.id) MC = null; save(); render(); }
+function applySuggest() { const s = suggestTargets(); let n = 0; S.cats.forEach(c => { if (!(c.tgt > 0) && s[c.id] > 0) { c.tgt = s[c.id]; if (latestK() && TAPPLY) mo(latestK()).tg[c.id] = s[c.id]; n++; } }); save(); say(n ? `Set ${plural(n, 'target')} from your own averages. Adjust any you like.` : 'Every category already has a target.'); render(); }
+function applyAllTargets() { if (RST !== 'tg') { RST = 'tg'; return render(); } RST = 0; Object.values(S.months).forEach(m => { S.cats.forEach(c => { m.tg[c.id] = c.tgt; }); }); save(); say('Every month is now scored against your current targets.'); render(); }
+function setTheme(t) { try { localStorage.setItem('mm_theme', t); } catch (e) { } applyTheme(); render(); }
+function applyTheme() { let t = 'auto'; try { t = localStorage.getItem('mm_theme') || 'auto'; } catch (e) { } if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', t); }
+function resetAll() { if (RST !== 'reset') { RST = 'reset'; return render(); } RST = 0; try { localStorage.removeItem(KEY); } catch (e) { } S = newState(); SEL = null; ME = null; V = 'home'; save(); say('Cleared.'); render(); }
+/* sample data: 14 months in the shape of the Monzo breakdown, so there is something to look at */
+function loadDemo() {
+  if (RST !== 'demo') { RST = 'demo'; return render(); } RST = 0; let seed = 9; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647, j = (b, s) => Math.max(0, Math.round((b + (rnd() - 0.5) * 2 * s) * 100) / 100);
+  S = newState({ name: S ? S.cfg.name : '' }); const T = { c_ess: 1700, c_hol: 300, c_avd: 250, c_wrk: 250, c_lif: 260, c_stg: 0, c_inv: 300, c_ef: 200 }; S.cats.forEach(c => { c.tgt = T[c.id] || 0; });
+  let eb = 1200, inv = 2600, ef = 900; const last = addM(curMonth(), -1);
+  for (let i = 13; i >= 0; i--) { const k = addM(last, -i), trend = (13 - i) / 13, m = { sb: eb, in: j(3650, 120), eb: null, v: {}, tg: {}, b: {}, note: '' };
+    m.v.c_ess = j(1680 - 40 * trend, 90); m.v.c_hol = i % 5 === 0 ? j(520, 80) : j(160, 90); m.v.c_ign = j(300, 90); m.v.c_avd = j(330 - 110 * trend, 70); m.v.c_wrk = j(230, 30); m.v.c_lif = j(235, 40); m.v.c_pen = j(8, 6); m.v.c_ccp = i % 4 === 0 ? j(400, 100) : 0; m.v.c_stg = i === 6 || i === 5 ? j(210, 50) : 0;
+    m.v.c_inv = j(240 + 90 * trend, 60); m.v.c_ef = j(190, 40); if (i === 3) m.v.c_inv = 0; inv = inv * 1.005 + m.v.c_inv; ef += m.v.c_ef; m.b.c_inv = Math.round(inv * 100) / 100; m.b.c_ef = Math.round(ef * 100) / 100;
+    const out = Object.values(m.v).reduce((s, x) => s + x, 0); m.eb = Math.round((eb + m.in - out) * 100) / 100; eb = m.eb; S.cats.forEach(c => { m.tg[c.id] = c.tgt; }); if (i === 5) m.note = 'Stag do'; S.months[k] = m; }
+  say('Sample data loaded: 14 months, so you can see everything working.'); save(); V = 'home'; SEL = null; render();
+}
+
+/* ---------- EXPORT / IMPORT ---------- */
+const csvCell = v => { v = v == null ? '' : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+function buildCSV() {
+  const R = [], sec = (n, h, d) => { R.push(['## ' + n]); R.push(h); d.forEach(r => R.push(r)); R.push([]); }, ks = MK(), c = S.cfg;
+  sec('about', ['key', 'value'], [['format', 'month-matrix-export-v1'], ['exported', ds(0)], ['how to restore', 'Month Matrix > Settings > Your data > Import a spreadsheet']]);
+  sec('summary (read-only)', ['month', 'money_in', 'spending', 'saved', 'left_over', 'money_out_all', 'saved_pct'], ks.map(k => [k, inOf(k), r2(spendOf(k)), r2(savedOf(k)), r2(leftOf(k)), r2(outOf(k)), rateOf(k) == null ? '' : r2(rateOf(k) * 100)]));
+  sec('settings', ['key', 'value'], [['name', c.name], ['currency', c.cur], ['saveRate', c.saveRate], ['efMonths', c.efMonths], ['efGoal', c.efGoal], ['invRate', c.invRate], ['invGoal', c.invGoal], ['created', S.created], ['lastExport', S.lastExport || '']]);
+  sec('categories', ['id', 'name', 'type', 'icon', 'monthly_target', 'role'], S.cats.map(x => [x.id, x.name, x.kind, x.icon, x.tgt, x.role || '']));
+  sec('months', ['month', 'starting_balance', 'money_in', 'ending_balance', 'note'], ks.map(k => { const m = mo(k); return [k, m.sb == null ? '' : m.sb, m.in, m.eb == null ? '' : m.eb, m.note]; }));
+  const vr = []; ks.forEach(k => { const m = mo(k); S.cats.forEach(x => { if (m.v[x.id] != null || m.b[x.id] != null || m.tg[x.id] != null) vr.push([k, x.id, x.name, m.v[x.id] == null ? '' : m.v[x.id], m.tg[x.id] == null ? '' : m.tg[x.id], m.b[x.id] == null ? '' : m.b[x.id]]); }); });
+  sec('values', ['month', 'category_id', 'category', 'amount', 'target_that_month', 'balance_at_month_end'], vr);
+  return '\ufeff' + R.map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
+}
+function parseCSV(t) {
+  t = t.replace(/^(\ufeff|ï»¿)+/, ''); const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < t.length; i++) { const ch = t[i]; if (q) { if (ch === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += ch; } else if (ch === '"') q = true; else if (ch === ',') { row.push(f); f = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; row.push(f); f = ''; rows.push(row); row = []; } else f += ch; }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); } return rows;
+}
+function sections(text) { const s = {}; let cur = null, head = false; parseCSV(text).forEach(r => { if (r[0] && r[0].startsWith('## ') && r.slice(1).every(x => x === '')) { cur = r[0].slice(3).trim(); s[cur] = { head: null, rows: [] }; head = true; return; } if (!cur || r.every(x => x === '')) return; if (head) { s[cur].head = r; head = false; return; } s[cur].rows.push(r); }); return s; }
+const nm = x => { x = String(x == null ? '' : x).trim(); let m = x.match(/^(\d{4})-(\d{1,2})/); if (m) return `${m[1]}-${m[2].padStart(2, '0')}`; m = x.match(/^(\d{1,2})[\/.](\d{4})$/); if (m) return `${m[2]}-${m[1].padStart(2, '0')}`; m = x.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/); if (m) return `${m[3].length === 2 ? '20' + m[3] : m[3]}-${m[2].padStart(2, '0')}`; return x; };
+function csvToState(text) {
+  const s = sections(text); if (!s.settings || !s.categories || !s.months) throw new Error('missing'); const kv = {}; s.settings.rows.forEach(r => { kv[r[0]] = r[1]; }); const num = x => (x === '' || x == null || isNaN(+x)) ? null : +x;
+  const raw = { cfg: { name: kv.name, cur: kv.currency, saveRate: num(kv.saveRate), efMonths: num(kv.efMonths), efGoal: num(kv.efGoal), invRate: num(kv.invRate), invGoal: num(kv.invGoal) }, created: nm(kv.created) ? kv.created : null, lastExport: kv.lastExport || null,
+    cats: s.categories.rows.map(r => ({ id: r[0], name: r[1], kind: r[2], icon: r[3], tgt: num(r[4]) || 0, role: r[5] || undefined })), months: {} };
+  s.months.rows.forEach(r => { raw.months[nm(r[0])] = { sb: num(r[1]), in: num(r[2]) || 0, eb: num(r[3]), note: r[4] || '', v: {}, tg: {}, b: {} }; });
+  (s.values ? s.values.rows : []).forEach(r => { const m = raw.months[nm(r[0])]; if (!m) return; if (num(r[3]) != null) m.v[r[1]] = num(r[3]); if (num(r[4]) != null) m.tg[r[1]] = num(r[4]); if (num(r[5]) != null) m.b[r[1]] = num(r[5]); });
+  const g = migrate(raw); if (!g) throw new Error('bad'); return g;
+}
+function exportCSV() {
+  S.lastExport = ds(0); save(); CSVT = buildCSV();
+  try { const u = URL.createObjectURL(new Blob([CSVT], { type: 'text/csv;charset=utf-8' })), a = document.createElement('a'); a.href = u; a.download = 'month-matrix-' + ds(0) + '.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000); DNOTE = 'Spreadsheet exported. Keep the file somewhere safe.'; } catch (e) { DNOTE = 'Your browser blocked the download. Copy the text below into a file called month-matrix.csv.'; } render();
+}
+function importFile(inp) {
+  const f = inp.files && inp.files[0]; if (!f) return; IMPQ = null; IMPERR = ''; const fr = new FileReader();
+  fr.onload = () => { try { IMPQ = csvToState(String(fr.result)); } catch (e) { IMPERR = "That file isn't a Month Matrix export."; } render(); }; fr.onerror = () => { IMPERR = "Couldn't read that file."; render(); }; fr.readAsText(f);
+}
+function applyImport() { if (!IMPQ) return; S = IMPQ; IMPQ = null; IMPERR = ''; SEL = null; say('Restored. Right where we left off.'); save(); V = 'home'; render(); scrollTo(0, 0); }
+function dataCard() {
+  const q = IMPQ ? `<div class="note"><b>Found ${plural(Object.keys(IMPQ.months).length, 'month')}.</b><div class="row mt"><button class="btn" onclick="applyImport()">Replace my current data</button><button class="btn g" onclick="IMPQ=null;render()">Cancel</button></div></div>` : '', last = S.lastExport, since = last ? Math.round((new Date(ds(0)) - new Date(last)) / 864e5) : null;
+  return `<div class="card"><h3>Your data</h3><div class="mu">Your data lives in this browser. Back it up as a spreadsheet now and then, and read it back in here any time.</div>
+   ${since == null ? '<div class="warnbox">You haven\'t backed up yet.</div>' : since > 40 ? `<div class="warnbox">Last backup was ${since} days ago.</div>` : `<div class="note">Last backup: ${last}.</div>`}<div class="row mt"><button class="btn" onclick="exportCSV()">Export spreadsheet (CSV)</button></div>
+   ${DNOTE ? `<div class="note" role="status">${esc(DNOTE)}</div>` : ''}${CSVT ? `<textarea class="csvbox" readonly aria-label="Exported spreadsheet text" onfocus="this.select()">${esc(CSVT)}</textarea>` : ''}
+   <div class="mt"><label>Import a Month Matrix spreadsheet<input type="file" accept=".csv,text/csv" onchange="importFile(this)"></label></div>${IMPERR ? `<div class="bad mt" role="alert">${esc(IMPERR)}</div>` : ''}${q}</div>`;
+}
+
+/* ---------- shell ---------- */
+function render() {
+  const T = [['home', '🏠', 'Home'], ['months', '📝', 'Months'], ['matrix', '🔢', 'Matrix'], ['charts', '📊', 'Charts'], ['streaks', '🔥', 'Streaks'], ['save', '💰', 'Savings'], ['settings', '⚙️', 'Settings']];
+  $('#nav').innerHTML = T.map(t => `<button class="${V === t[0] ? 'on' : ''}" ${V === t[0] ? 'aria-current="page"' : ''} onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join('');
+  $('#app').innerHTML = { home: vHome, months: vMonths, matrix: vMatrix, charts: vCharts, streaks: vStreaks, save: vSave, settings: vSettings }[V]();
+  if (V === 'save') wiCalc();
+}
+
+/* ---------------------------------------------------------------------
+   13. BOOT
+   --------------------------------------------------------------------- */
+try { applyTheme(); } catch (e) { }
+S = load() || newState();
+render();
+
+</script></body></html>
